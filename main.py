@@ -1,6 +1,14 @@
 from fastapi import FastAPI
+from router import bucket
 
 app = FastAPI()
+
+
+app.include_router(
+    router.bucket,
+    prefix="/bucket",
+    tags=["bucket"]
+)
 
 @app.get("/")
 async def root():
