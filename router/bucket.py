@@ -15,8 +15,19 @@ conn = mariadb.connect(
 
 @router.get("/list")
 async def list():
-    return {
-    "status": "success",
-    "code": 200,
-    "data": [{"id": 1, "name": "Test"}]
-    }
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, name FROM bucket")
+        rows = cursor.fetchall()
+        data = [{"id": row[0], "name": row[1]} for row in rows]
+        return {
+            "status": "success",
+            "code": 200,
+            "data": data
+        }
+    except mariadb.Error as e:
+        return {
+            "status": "error",
+            "code": 500,
+            "message": f"Database error: {e}"
+        }
