@@ -17,20 +17,29 @@ def _load_config():
             _config = {}  # 返回空字典避免后续KeyError
     return _config
 
+def _save_config():
+    """保存配置到文件"""
+    global _config
+    try:
+        # 保存到文件
+        with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
+            toml.dump(_config, f)
+        return _config
+    except (IOError, toml.TomlEncodeError) as e:
+        log.error("配置文件保存失败: %s", CONFIG_PATH)
+        return _config
+
 def get_port(default=80):
     """获取端口配置"""
-    config = _load_config()
-    return config.get('website', {}).get('port', default)
+    return _config.get('website', {}).get('port', default)
 
 def get_host(default="0.0.0.0"):
     """获取主机配置"""
-    config = _load_config()
-    return config.get('website', {}).get('host', default)
+    return _config.get('website', {}).get('host', default)
 
 def get_website_name(default="HiList"):
     """获取网站名称"""
-    config = _load_config()
-    name = config.get('website', {}).get('url', default)
+    name = _config.get('website', {}).get('name', default)
     if name == "HiList":
         log.warning("网站名称未设置! 默认为 HiList，请修改配置文件")
     return name
@@ -57,3 +66,6 @@ log.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S',
     level=log.INFO  # 使用标准日志级别
 )
+
+# 加载配置
+_load_config()
