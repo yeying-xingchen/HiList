@@ -5,7 +5,7 @@ app = FastAPI()
 
 
 app.include_router(
-    router.bucket,
+    bucket.router,
     prefix="/bucket",
     tags=["bucket"]
 )
