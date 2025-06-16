@@ -3,7 +3,6 @@ from router import bucket
 
 app = FastAPI()
 
-
 app.include_router(
     bucket.router,
     prefix="/bucket",

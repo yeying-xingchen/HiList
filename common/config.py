@@ -1,53 +1,52 @@
 import toml
 import logging as log
-
-'''
-单项目日志系列配置
-'''
-
-# loggin基础配置
-log.basicConfig(
-    filename= "./run.log",  # 日志记录文件位置
-    format= '[%(asctime)s] %(name)s - %(levelname)s - %(module)s : %(message)s', # 时间-项目名称-信息等级-信息所属模块-信息
-    datefmt= '%Y-%m-%d %H:%M:%S', # 时间记录的格式
-    level=0,
-)
-
-
 import os
-path = os.getcwd() + "\\config.toml"
 
-def get_port():
-    """获取端口，若不存在则返回80"""
-    try:
-        config = toml.load(path)
-        return config['website']['port']
-    except KeyError:
-        return 80
+CONFIG_PATH = os.path.join(os.getcwd(), "config.toml")  # 使用跨平台路径拼接
 
-def get_host():
-    """获取主机地址，若不存在则返回'0.0.0.0'"""
-    try:
-        config = toml.load(path)
-        return config['website']['host']
-    except KeyError:
-        return "0.0.0.0"
+_config = None
 
-def get_website_name():
-    """获取网站名称，若不存在则返回'HiList'"""
-    try:
-        config = toml.load(path)
-        if config['website']['url'] == "HiList":
-            log.warning(f"网站名称未设置！默认为 HiList，请前往配置文件修改。")
-        return config['website']['url']
-    except KeyError:
-        return "HiList"
-    
+def _load_config():
+    """加载配置文件并缓存结果"""
+    global _config
+    if _config is None:
+        try:
+            _config = toml.load(CONFIG_PATH)
+        except (FileNotFoundError, toml.TomlDecodeError):
+            log.error("配置文件加载失败: %s", CONFIG_PATH)
+            _config = {}  # 返回空字典避免后续KeyError
+    return _config
+
+def get_port(default=80):
+    """获取端口配置"""
+    config = _load_config()
+    return config.get('website', {}).get('port', default)
+
+def get_host(default="0.0.0.0"):
+    """获取主机配置"""
+    config = _load_config()
+    return config.get('website', {}).get('host', default)
+
+def get_website_name(default="HiList"):
+    """获取网站名称"""
+    config = _load_config()
+    name = config.get('website', {}).get('url', default)
+    if name == "HiList":
+        log.warning("网站名称未设置! 默认为 HiList，请修改配置文件")
+    return name
+
 def get_db_info() -> dict:
-    """获取数据库信息"""
-    try:
-        config = toml.load(path)
-        return config['database']
-    except KeyError:
-        log.error(f"数据库信息未设置！请前往配置文件修改。")
-        return 0
+    """获取数据库配置"""
+    config = _load_config()
+    db_config = config.get('database', {})
+    if not db_config:
+        log.error("数据库配置缺失! 请检查配置文件")
+    return db_config
+
+# 日志初始化（应放在模块底部）
+log.basicConfig(
+    filename="./run.log",
+    format='[%(asctime)s] %(name)s - %(levelname)s - %(module)s : %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    level=log.INFO  # 使用标准日志级别
+)
