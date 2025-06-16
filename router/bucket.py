@@ -6,11 +6,11 @@ router = APIRouter()
 
 db_config = config.get_db_info()
 conn = mariadb.connect(
-    host=db_config.host,
-    port=db_config.port,
-    database=db_config.database,
-    user=db_config.user,
-    password=db_config.password,
+    host=db_config["host"],
+    port=db_config["port"],
+    database=db_config["database"],
+    user=db_config["user"],
+    password=db_config["password"],
 )
 
 @router.get("/list")
