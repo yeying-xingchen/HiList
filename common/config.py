@@ -38,14 +38,15 @@ def get_website_name(default="HiList"):
 def get_db_info() -> dict:
     """获取数据库配置"""
     config = _load_config()
-    db_config = config.get('database', {
-        "host": "127.0.0.1",
-        "port": 3306,
-        "database": "hilist",
-        "user": "root",
-        "password": "123456"
-    })
+    db_config = config.get('database', {})
     if not db_config:
+        db_config = {
+            "host": "127.0.0.1",
+            "port": 3306,
+            "database": "hilist",
+            "user": "root",
+            "password": "123456"
+        }
         log.error("数据库配置缺失! 请检查配置文件")
     return db_config
 
