@@ -61,7 +61,7 @@ def get_db_info() -> dict:
 
 # 日志初始化（应放在模块底部）
 log.basicConfig(
-    filename="./run.log",
+    filename="./log/run.log",
     format='[%(asctime)s] %(name)s - %(levelname)s - %(module)s : %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S',
     level=log.INFO  # 使用标准日志级别
