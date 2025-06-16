@@ -2,7 +2,7 @@ import toml
 import logging as log
 import os
 
-CONFIG_PATH = os.path.join(os.getcwd(), "config.toml")  # 使用跨平台路径拼接
+CONFIG_PATH = os.path.join(os.getcwd(), "config.toml")
 
 _config = None
 
