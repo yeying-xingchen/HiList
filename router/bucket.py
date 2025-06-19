@@ -36,3 +36,21 @@ async def list():
             "code": 500,
             "message": f"Database error: {e}"
         }
+
+@router.post("/add")
+async def add(name: str, type: str, url: str):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO bucket (name, type, url) VALUES (?, ?, ?)", (name, type, url))
+        conn.commit()
+        return {
+            "status": "success",
+            "code": 200,
+            "message": "Bucket added successfully"
+        }
+    except mariadb.Error as e:
+        return {
+            "status": "error",
+            "code": 500,
+            "message": f"Database error: {e}"
+        }
